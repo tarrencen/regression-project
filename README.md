@@ -16,21 +16,37 @@ As a junior data scientist on Zillow's data, produce a machine learning regressi
 ### Data dictionary:
 
 'bathroomcnt (baths)':	 Number of bathrooms in home including fractional bathrooms
+
 'bedroomcnt (beds)':	 Number of bedrooms in home 
+
 'roomcnt (total_rooms)':	 Total number of rooms in the principal residence
+
 'numberofstories':	 Number of stories or levels the home has
+
 'buildingqualitytypeid':	 Overall assessment of condition of the building from best (lowest) to worst (highest)
-'calculatedfinishedsquarefeet':	 Calculated total finished living area of the home 
+
+'calculatedfinishedsquarefeet':	 Calculated total finished living area of the home
+
 'fireplaceflag':	 Is a fireplace present in this home
+
 'poolcnt':	 Number of pools on the lot (if any)
+
 'fips':	 Federal Information Processing Standard code -  see https://en.wikipedia.org/wiki/FIPS_county_code for more details
+
 'lotsizesquarefeet':	 Area of the lot in square feet
+
 'structuretaxvaluedollarcnt':	The assessed value of the built structure on the parcel
+
 'landtaxvaluedollarcnt':	The assessed value of the land area of the parcel
+
 'taxvaluedollarcnt':	The total tax assessed value of the parcel
+
 'taxamount':	The total property tax assessed for that assessment year
-'yearbuilt':	 The Year the principal residence was built 
+
+'yearbuilt':	 The Year the principal residence was built
+
 'logerror': $log(Zestimate) - log(Sale Price)$
+
 
 ### Initial questions:
 - What features in a single family residence are most important in determining its tax assessed value?
