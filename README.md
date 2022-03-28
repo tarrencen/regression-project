@@ -1,7 +1,7 @@
 ### Regression Project
 
 ### Objective: 
-As a junior data scientist on Zillow's data, produce a machine learning regression model that will predict property tax assessed values of single family residences that had a transaction in 2017. Provide a report on the process(es) employed to produce the model and their outcomes. Give a succinct presentation (no longer than five minutes) of the model, its results and any other relevant findings discovered in the process of creating the model.
+As a junior data scientist on Zillow's data science team, produce a machine learning regression model that will predict property tax assessed values of single family residences that had a transaction in 2017. Provide a report on the process(es) employed to produce the model and their outcomes. Give a succinct presentation (no longer than five minutes) of the model, its results and any other relevant findings discovered in the process of creating the model.
 
 ### Planning:
 - Acquire the appropriate data from the Codeup SQL database.
@@ -21,31 +21,31 @@ As a junior data scientist on Zillow's data, produce a machine learning regressi
 
 'roomcnt (total_rooms)':	 Total number of rooms in the principal residence
 
-'numberofstories':	 Number of stories or levels the home has
+'numberofstories (stories)':	 Number of stories or levels the home has
 
-'buildingqualitytypeid':	 Overall assessment of condition of the building from best (lowest) to worst (highest)
+'buildingqualitytypeid (condition)':	 Overall assessment of condition of the building from best (lowest) to worst (highest)
 
-'calculatedfinishedsquarefeet':	 Calculated total finished living area of the home
+'calculatedfinishedsquarefeet (calc_fin_sqft)':	 Calculated total finished living area of the home
 
-'fireplaceflag':	 Is a fireplace present in this home
+'fireplaceflag (fireplace)':	 Is a fireplace present in this home
 
-'poolcnt':	 Number of pools on the lot (if any)
+'poolcnt (pools)':	 Number of pools on the lot (if any)
 
 'fips':	 Federal Information Processing Standard code -  see https://en.wikipedia.org/wiki/FIPS_county_code for more details
 
-'lotsizesquarefeet':	 Area of the lot in square feet
+'lotsizesquarefeet (lot_sqft)':	 Area of the lot in square feet
 
-'structuretaxvaluedollarcnt':	The assessed value of the built structure on the parcel
+'structuretaxvaluedollarcn (structure_tax_val)':	The assessed value of the built structure on the parcel
 
-'landtaxvaluedollarcnt':	The assessed value of the land area of the parcel
+'landtaxvaluedollarcnt (land_tax_val)':	The assessed value of the land area of the parcel
 
-'taxvaluedollarcnt':	The total tax assessed value of the parcel
+'taxvaluedollarcnt (tax_val)':	The total tax assessed value of the parcel
 
-'taxamount':	The total property tax assessed for that assessment year
+'taxamount (tax_amt)':	The total property tax assessed for that assessment year
 
-'yearbuilt':	 The Year the principal residence was built
+'yearbuilt (yr_built)':	 The Year the principal residence was built
 
-'logerror': $log(Zestimate) - log(Sale Price)$
+'logerror (log_err)': log(Zestimate) - log(Sale Price)
 
 
 ### Initial questions:
@@ -53,3 +53,9 @@ As a junior data scientist on Zillow's data, produce a machine learning regressi
 - How does the number of rooms in a single family residence affect its tax assessed value?
 - How does a single family residence's square footage (living area and/or lot size) affect its tax assessed value?
 - Is there a relationship between a single family residence's condition rating ('buildingqualitytypeid') and its tax assessed value?
+
+### Procedure:
+
+- Acquire the data by pandas read in SQL query of the zillow DB on desired columns (chosen after researching the data dictionary - zillow_data_dictionary.xlsx - downloaded from Kaggle)
+- Analyze and determine suitability of collected data for exploration and subsequent modeling, then clean data according to findings
+- Perform univariate analysis and visualizations (particularly for documentation of distributions of continuous variables)
