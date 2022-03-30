@@ -59,3 +59,8 @@ As a junior data scientist on Zillow's data science team, produce a machine lear
 - Acquire the data by pandas read in SQL query of the zillow DB on desired columns (chosen after researching the data dictionary - zillow_data_dictionary.xlsx - downloaded from Kaggle)
 - Analyze and determine suitability of collected data for exploration and subsequent modeling, then clean data according to findings
 - Perform univariate analysis and visualizations (particularly for documentation of distributions of continuous variables)
+- Split data into train/validate/test sets
+- Scale data
+- Perform bivariate analysis and run statistical tests
+- Select/engineer features
+- Evaluate models on train split
