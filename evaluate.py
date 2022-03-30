@@ -11,9 +11,9 @@ from sklearn.metrics import mean_squared_error, r2_score, explained_variance_sco
 from sklearn.preprocessing import MinMaxScaler
 
 def get_splits(df):
-    train, test = train_test_split(df, test_size= 0.2, random_state=302)
-    train, validate = train_test_split(train, test_size= 0.3, random_state=302)
-    return train, test, validate
+    train_validate, test = train_test_split(df, train_size= 0.8, random_state=302)
+    train, validate = train_test_split(train_validate, train_size= 0.7, random_state=302)
+    return train, validate, test
     
 
 
