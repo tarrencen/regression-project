@@ -55,7 +55,7 @@ def get_prop_vals():
     url = get_db_url('zillow')
     prop_vals = pd.read_sql(query, url)
     print('Copying to CSV...')
-    prop_vals.to_csv(filename)
+    prop_vals.to_csv(filename, index=False)
     return prop_vals
 
 
