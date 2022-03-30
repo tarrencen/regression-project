@@ -63,4 +63,8 @@ As a junior data scientist on Zillow's data science team, produce a machine lear
 - Scale data
 - Perform bivariate analysis and run statistical tests
 - Select/engineer features
-- Evaluate models on train split
+- Evaluate models on train split, then on validate split, and select best performing models for final evaluation on test split
+
+# Findings:
+- Model performance improved with an optimum number of features: not too many, not too few
+- All models beat the baseline, but there is room for improvement
