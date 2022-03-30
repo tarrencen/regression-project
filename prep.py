@@ -1,81 +1,86 @@
 import pandas as pd
 import numpy as np
-import acquire as acq
 import wrangle as wr
 from env import get_db_url
 from sklearn.model_selection import train_test_split
 from sklearn.impute import SimpleImputer
+from sklearn.preprocessing import MinMaxScaler, StandardScaler, RobustScaler
+from sklearn.feature_selection import SelectKBest, f_regression, RFE
+from sklearn.linear_model import LinearRegression
 
-iris_df = acq.get_iris_data()
-
-def prep_iris(iris_df):
-    '''
-    Takes in a DataFrame of the iris dataset as acquired and returns a cleaned DF
-    Args: iris_df, pandas DataFrame with expected columns and feature names
-    Return: cleaned iris_df, pandas DF with cleaning operations performed
-    '''
+def get_splits(df):
+    train, test = train_test_split(df, test_size= 0.2, random_state=302)
+    train, validate = train_test_split(train, test_size= 0.3, random_state=302)
+    return train, test, validate
     
-    iris_df = acq.get_iris_data()
-    iris_df = iris_df.drop_duplicates()
-    cols_to_drop = ['species_id', 'measurement_id']
-    iris_df = iris_df.drop(columns= (cols_to_drop))
-    iris_df = iris_df.rename(columns= {'species_id.1': 'species_id', 'species_name': 'species'})
-    dummy_df = pd.get_dummies(iris_df[['species']], dummy_na=False, drop_first=[True])
-    iris_df = pd.concat([iris_df, dummy_df], axis=1)
-    return iris_df
-
-def prep_titanic(titanic_df):
-    '''
-    Takes in a pandas DataFrame of the Titanic dataset as acquired and returns a cleaned version of the DF, and train, validate, and test splits
-    Args: titanic_df, pandas DF with expected columns and feature names
-    Return: titanic_df_clean and splits of it (train, validate, and test) 
-    '''
-    titanic_df = acq.get_titanic_data()
-    titanic_df = titanic_df.drop_duplicates()
-    titanic_df = titanic_df.drop(columns= ['passenger_id', 'age', 'embarked', 'class', 'deck'])
-    titanic_df = titanic_df.fillna('Southampton')
-    titanic_dummy_df = pd.get_dummies(titanic_df[['sex', 'embark_town']], dummy_na=False, drop_first= [True, True])
-    titanic_df = pd.concat([titanic_df, titanic_dummy_df], axis=1)
-    titanic_df_clean = titanic_df.drop(columns= ['sex', 'embark_town'])
-    titanic_train, titanic_test = train_test_split(titanic_df_clean, train_size = 0.8, stratify= titanic_df_clean.survived,
-        random_state= 302)
-    titanic_train, titanic_validate = train_test_split(titanic_train, train_size = 0.7, stratify= titanic_train.survived, random_state= 302)
-    return titanic_df_clean, titanic_train, titanic_validate, titanic_test
 
 
-def prep_alt_titanic(titanic_df):
+def isolate_lm_target(train, validate, test, target):
     '''
-    Takes in a pandas DataFrame of the Titanic dataset as acquired and returns a cleaned version of the DF, and train, validate, and test splits
-    Args: titanic_df, pandas DF with expected columns and feature names
-    Return: titanic_df_clean and splits of it (train, validate, and test) 
+    Takes in train/validate/test splits and a target variable and returns corresponding X and y splits with
+    target variable isolated (y_train, y_validate, y_test), ready for modeling.
     '''
-    titanic_df = acq.get_titanic_data()
-    titanic_df = titanic_df.drop_duplicates()
-    titanic_df = titanic_df.drop(columns= ['passenger_id', 'embarked', 'class', 'deck'])
-    titanic_df = titanic_df.fillna('Southampton')
-    titanic_dummy_df = pd.get_dummies(titanic_df[['sex', 'embark_town']], dummy_na=False, drop_first= [True, True])
-    titanic_df = pd.concat([titanic_df, titanic_dummy_df], axis=1)
-    alt_titanic_df_clean = titanic_df.drop(columns= ['sex', 'embark_town'])
-    alt_titanic_train, alt_titanic_test = train_test_split(alt_titanic_df_clean, train_size = 0.8, stratify= alt_titanic_df_clean.survived,
-        random_state= 302)
-    alt_titanic_train, alt_titanic_validate = train_test_split(alt_titanic_train, train_size = 0.7, stratify= alt_titanic_train.survived, random_state= 302)
-    return alt_titanic_df_clean, alt_titanic_train, alt_titanic_validate, alt_titanic_test
+    X_train = train.drop(columns= [target])
+    y_train = train[[target]]
 
-def prep_telco(telco_df):
+    X_validate = validate.drop(columns= [target])
+    y_validate = validate[[target]]
+
+    X_test = test.drop(columns= [target])
+    y_test= test[[target]]
+    return X_train, y_train, X_validate, y_validate, X_test, y_test
+
+
+def get_Xy_dummies(X_train, X_validate, X_test):
     '''
-    Takes in a pandas DataFrame of Telco data and returns a clean and prepped DF (telco_df_clean) along with train, 
-    validate, and test splits
+    Takes in X train/validate/test splits (target variable already removed) and returns reassigned splits with one-hot encoded categorical variables ("dummies")
+    concatenated as part of the new dataframe
     '''
-    
-    telco_df = telco_df.drop_duplicates()
-    telco_df = telco_df.drop(columns= ['contract_type_id.1', 'payment_type_id.1', 'internet_service_type_id.1'])
-    telco_df.total_charges = telco_df.total_charges.replace(' ', np.nan).astype(float)
-    telco_df = telco_df.dropna()
-    cat_cols = [col for col in telco_df.columns if telco_df[col].dtype == 'O']
-    telco_cats = list(telco_df[cat_cols].columns)
-    telco_cats = telco_cats[1:]
-    telco_dummies = pd.get_dummies(telco_df[telco_cats], dummy_na=False, drop_first=True)
-    telco_df_clean = pd.concat([telco_df, telco_dummies], axis=1)
-    telco_train, telco_test = train_test_split(telco_df_clean, train_size = 0.8, stratify= telco_df_clean.churn_Yes, random_state= 302)
-    telco_train, telco_validate =  train_test_split(telco_train, train_size= 0.7, stratify= telco_train.churn_Yes, random_state= 302)
-    return telco_df_clean, telco_train, telco_validate, telco_test 
+    X_train_dummies = pd.get_dummies(X_train.select_dtypes(exclude=np.number), dummy_na=False, drop_first=True)
+    X_train = pd.concat([X_train, X_train_dummies], axis=1, ignore_index=False)
+
+    X_validate_dummies = pd.get_dummies(X_validate.select_dtypes(exclude=np.number), dummy_na=False, drop_first=True)
+    X_validate = pd.concat([X_validate, X_validate_dummies], axis=1, ignore_index=False)
+
+    X_test_dummies = pd.get_dummies(X_test.select_dtypes(exclude=np.number), dummy_na=False, drop_first=True)
+    X_test = pd.concat([X_test, X_test_dummies], axis=1, ignore_index=False)
+    return X_train, X_validate, X_test
+
+def minmax_scale_data(train, validate, test, cols_to_scale, return_scaler=False):
+
+    train_scaled = train.copy()
+    validate_scaled = validate.copy()
+    test_scaled = test.copy()
+
+    mmscaler = MinMaxScaler()
+
+    mmscaler.fit(train[cols_to_scale])
+
+    train_scaled[cols_to_scale] = mmscaler.transform(train[cols_to_scale])
+    validate_scaled[cols_to_scale] = mmscaler.transform(validate[cols_to_scale])
+    test_scaled[cols_to_scale] = mmscaler.transform(test[cols_to_scale])
+
+    if return_scaler:
+        return mmscaler, train_scaled, validate_scaled, test_scaled
+    else:
+        return train_scaled, validate_scaled, test_scaled
+
+
+def rfe(X, y, k):
+    lm = LinearRegression()
+    rfe = RFE(lm, k)
+    rfe.fit(X, y)
+
+    rfe_mask = rfe.support_
+    rfe_feature = X.iloc[:,rfe_mask].columns.tolist()
+    var_ranks = rfe.ranking_
+    var_names = X.columns.tolist()
+    rfe_ranked = pd.DataFrame({'Var': var_names, 'Rank': var_ranks})
+    return rfe_feature, rfe_ranked
+
+def select_kbest(X, y, k):
+    f_selector = SelectKBest(f_regression, k)
+    f_selector.fit(X,y)
+    f_mask = f_selector.get_support()
+    f_feature = X.iloc[:,f_mask].columns.tolist()
+    return f_feature
